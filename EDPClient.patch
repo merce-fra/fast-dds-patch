@@ -1,0 +1,55 @@
+diff --git a/src/cpp/rtps/builtin/discovery/endpoint/EDPClient.cpp b/src/cpp/rtps/builtin/discovery/endpoint/EDPClient.cpp
+index 5dbba3856..bb08d4a2f 100644
+--- a/src/cpp/rtps/builtin/discovery/endpoint/EDPClient.cpp
++++ b/src/cpp/rtps/builtin/discovery/endpoint/EDPClient.cpp
+@@ -37,6 +37,26 @@ namespace rtps {
+ 
+ using namespace fastrtps::rtps;
+ 
++//////////////////////////////// PATCH ////////////////////////////////
++// add the topics name you want allow (specific namespaces can be discarded e.g., /robot_1/cmd_vel, /robot_2/cmd_vel)
++const std::vector<std::string> allowed_remote_topic_list = {
++    "/cmd_vel"
++};
++
++static bool is_allowed(eprosima::fastrtps::string_255& topic)
++{
++    std::string _topic = topic.to_string();
++
++    for(auto  allowed_pattern : allowed_remote_topic_list)
++    {
++      if (_topic.find(allowed_pattern) != std::string::npos) {
++        return true;
++      }
++    }
++    return false;
++}
++///////////////////////////////////////////////////////////////////////
++
+ bool EDPClient::processLocalReaderProxyData(
+         RTPSReader* local_reader,
+         ReaderProxyData* rdata)
+@@ -53,6 +73,11 @@ bool EDPClient::processLocalReaderProxyData(
+     }
+ #endif // if HAVE_SECURITY
+ 
++//////////////////////////////// PATCH ////////////////////////////////
++    if(!is_allowed(rdata->topicName()))
++      return true;
++///////////////////////////////////////////////////////////////////////
++
+     CacheChange_t* change = nullptr;
+     bool ret_val = serialize_reader_proxy_data(*rdata, *writer, true, &change);
+     if (change != nullptr)
+@@ -86,6 +111,11 @@ bool EDPClient::processLocalWriterProxyData(
+     }
+ #endif // if HAVE_SECURITY
+ 
++//////////////////////////////// PATCH ////////////////////////////////
++    if(!is_allowed(wdata->topicName()))
++      return true;
++///////////////////////////////////////////////////////////////////////
++  
+     CacheChange_t* change = nullptr;
+     bool ret_val = serialize_writer_proxy_data(*wdata, *writer, true, &change);
+     if (change != nullptr)
