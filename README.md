@@ -13,9 +13,9 @@ Follow the procedure to modify Fast-DDS on **your remote agents not on the host 
 $ cd <your_ros2_ws>/src
 $ rm eProsima/Fast-DDS (if present)
 $ git clone git@github.com:merce-fra/fast-dds-patch.git
-$ vcs import . < fast-dds.repos
-$ cp EDPClient.patch eProsima/Fast-DDS
-$ cd eProsima/Fast-DDS 
+$ vcs import ../ < fast-dds.repos
+$ cp EDPClient.patch ../eProsima/Fast-DDS
+$ cd ../eProsima/Fast-DDS 
 $ git apply EDPClient.patch
 ```
 
