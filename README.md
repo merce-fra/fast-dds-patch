@@ -5,13 +5,13 @@ Discovery mechanisms are often required to dynamically list all ROS2 communicati
 ## Installation
 
 Follow the procedure to modify Fast-DDS on **your remote agents not on the host machine**:
-* Go to your ROS2 src folder and erase your current Fast-DDS repository
+* Go to your ROS2 src folder and create a backup of your current Fast-DDS repository
 * Download Fast-DDS repo (targeting our current tag but it should work with the most recent version too)
 * apply the patch to the EDPClient.cpp file
 
 ```
 $ cd <your_ros2_ws>/src
-$ rm eProsima/Fast-DDS (if present)
+$ mv eProsima/Fast-DDS eProsima/Fast-DDS_backup (if present)
 $ git clone git@github.com:merce-fra/fast-dds-patch.git
 $ vcs import ../ < fast-dds.repos
 $ cp EDPClient.patch ../eProsima/Fast-DDS
@@ -22,6 +22,11 @@ $ git apply EDPClient.patch
 A white list has now been added to the file EDPClient.cpp. Go to this file to allow only the necessary traffic for your remote nodes.
 For example you can add "/cmd_vel" or "/clock" to the list. Then, all topics containing these entries will be allowed to exchange packets. There is no need to add the topics for all namespaces (e.g., "/robot_1/cmd_vel", "/robot_2/cmd_vel", ... ).
 
-Now you can recompile the Fast-DDS package.
+Now you can recompile the Fast-DDS package with
 
-Note: By running Wireshark you should see a lower traffic peak when launching your experiment.
+```
+cd <your_ros2_ws>
+colcon build --packages-select fastrtps
+```
+
+Note: By running Wireshark you should observe a lower traffic peak when launching your experiment.
